@@ -429,6 +429,7 @@ apply_patches() {
   patch_carrier_fixes
   patch_apps
   patch_chromium_webview
+  patch_recovery
   patch_updater
   patch_fdroid
   patch_priv_ext
@@ -460,6 +461,22 @@ patch_apps() {
   sed -i.original "\$aPRODUCT_PACKAGES += F-DroidPrivilegedExtension" ${BUILD_DIR}/build/make/target/product/core.mk
   sed -i.original "\$aPRODUCT_PACKAGES += F-Droid" ${BUILD_DIR}/build/make/target/product/core.mk
   sed -i.original "\$aPRODUCT_PACKAGES += chromium" ${BUILD_DIR}/build/make/target/product/core.mk
+}
+
+patch_recovery() {
+  # Disable menu entries:
+  # * Wipe data/factory reset
+  # * Mount /system
+  # * View recovery logs
+  # * Run graphics test
+  sed -i.original \
+    -e '/^#ifndef AB_OTA_UPDATER$/d' \
+    -e '/"Wipe data\/factory reset"/i #ifndef AB_OTA_UPDATER' \
+    -e '/Device::WIPE_DATA/i #ifndef AB_OTA_UPDATER' \
+    -e '/^#endif  \/\/ !AB_OTA_UPDATER$/d' \
+    -e '/"Run graphics test"/a #endif  // !AB_OTA_UPDATER' \
+    -e '/Device::RUN_GRAPHICS_TEST/a #endif  // !AB_OTA_UPDATER' \
+    "${BUILD_DIR}/bootable/recovery/device.cpp"
 }
 
 patch_updater() {
