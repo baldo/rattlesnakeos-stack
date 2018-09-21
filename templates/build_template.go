@@ -558,6 +558,15 @@ build_chromium() {
   cd src
 
   # checkout specific revision
+  if [[ -d "$GIT_CACHE_PATH" ]]; then
+    for dir in "$GIT_CACHE_PATH"/*; do
+      git \
+        -C "$dir" \
+        fetch origin refs/tags/"$CHROMIUM_REVISION":refs/tags/"$CHROMIUM_REVISION" || true
+    done
+  fi
+
+  git fetch origin refs/tags/"$CHROMIUM_REVISION":refs/tags/"$CHROMIUM_REVISION" || true
   git checkout "$CHROMIUM_REVISION" -f
 
   # install dependencies
