@@ -2,15 +2,16 @@ package stack
 
 import (
 	"fmt"
-	"os"
-	"strings"
+	// "os"
+	// "strings"
+	"io/ioutil"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/sns"
+	// "github.com/aws/aws-sdk-go/service/sns"
 	"github.com/dan-v/rattlesnakeos-stack/templates"
 	log "github.com/sirupsen/logrus"
 )
@@ -86,6 +87,7 @@ type AWSStack struct {
 }
 
 func NewAWSStack(config *AWSStackConfig) (*AWSStack, error) {
+	/*
 	err := checkAWSCreds(config.Region)
 	if err != nil {
 		return nil, err
@@ -95,7 +97,7 @@ func NewAWSStack(config *AWSStackConfig) (*AWSStack, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	*/
 	renderedLambdaFunction, err := renderTemplate(templates.LambdaTemplate, config)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to render Lambda function: %v", err)
@@ -111,17 +113,23 @@ func NewAWSStack(config *AWSStackConfig) (*AWSStack, error) {
 		renderedBuildScript:    renderedBuildScript,
 		renderedLambdaFunction: renderedLambdaFunction,
 	}
-
+	/*
 	terraformClient, err := newTerraformClient(stack, os.Stdout, os.Stdin)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create terraform client: %v", err)
 	}
 	stack.terraformClient = terraformClient
-
+	*/
 	return stack, nil
 }
 
 func (s *AWSStack) Apply() error {
+	err := ioutil.WriteFile("/tmp/build.sh", s.renderedBuildScript, 0700)
+	if err != nil {
+		panic(err)
+	}
+
+	/*
 	defer s.terraformClient.Cleanup()
 
 	sess, err := session.NewSession(aws.NewConfig().WithCredentialsChainVerboseErrors(true))
@@ -184,7 +192,7 @@ func (s *AWSStack) Apply() error {
 			break
 		}
 	}
-
+	*/
 	return nil
 }
 
