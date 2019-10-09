@@ -1283,7 +1283,7 @@ aws_import_keys() {
   pushd "${KEYS_DIR}/${DEVICE}"
   if [ ! -f "${KEYS_DIR}/${DEVICE}/networkstack.pk8" ]; then
     log "Did not find networkstack key - generating one"
-    ! "${BUILD_DIR}/development/tools/make_key" "networkstack" "$CERTIFICATE_SUBJECT"
+    ! (echo | "${BUILD_DIR}/development/tools/make_key" "networkstack" "$CERTIFICATE_SUBJECT")
 
     if [ "$ENCRYPTED_KEYS" = true ]; then
       log "Encrypting and uploading new networkstack key to s3://${AWS_ENCRYPTED_KEYS_BUCKET}"
@@ -1305,7 +1305,7 @@ gen_keys() {
   cd "${KEYS_DIR}/${DEVICE}"
   for key in {releasekey,platform,shared,media,networkstack,verity} ; do
     # make_key exits with unsuccessful code 1 instead of 0, need ! to negate
-    ! "${BUILD_DIR}/development/tools/make_key" "$key" "$CERTIFICATE_SUBJECT"
+    ! (echo | "${BUILD_DIR}/development/tools/make_key" "$key" "$CERTIFICATE_SUBJECT")
   done
 
   if [ "${AVB_MODE}" == "verity_only" ]; then
